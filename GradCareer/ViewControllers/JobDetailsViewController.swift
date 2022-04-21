@@ -6,25 +6,63 @@
 //
 
 import UIKit
+import SwiftUI
 import SafariServices // so we can open url
 
 class JobDetailsViewController: UIViewController {
+    
+    static let shared = Service()
     
     var jobResult: Posting! {
         didSet {
             companyLabel.text = jobResult.companyName
             titleLabel.text = jobResult.title
+            let cn = jobResult.companyName
+            let tn = jobResult.title
+            let str = tn + "," + cn
             let type = jobResult.jobTypes.joined(separator: " ")
             typeLabel.text = type
             typeLabel.text = type
             locationLabel.text = jobResult.location
-            companyUrl = jobResult.url ?? ""
-            applyUrl = jobResult.url ?? ""
-            htmlText = jobResult.description ?? ""
+            companyUrl = jobResult.url 
+            applyUrl = str
+            let applyButton: UIButton = {
+                let button = UIButton(type: .system)
+                button.setTitle("Add to management", for: .normal)
+                button.tintColor = .white
+                button.backgroundColor = .systemPurple
+                button.layer.cornerRadius = 15
+                button.addTarget(self, action: #selector(showAlert), for: .touchUpInside)
+                return button
+            }()
+            
+            view.addSubview(applyButton)
+            applyButton.anchor(top: descriptionTextView.bottomAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 10, left: 70, bottom: 30, right: 70))
+            
+            htmlText = jobResult.description 
             let descriptionHTML = convertHTML(text: htmlText, attributedText: &descriptionTextView.attributedText)
             descriptionTextView.attributedText = descriptionHTML
         }
     }
+    
+    @objc func showAlert() {
+        let applyText = applyUrl
+        let refreshAlert = UIAlertController(title: "", message: "Have you applied for this job?" + applyText, preferredStyle: UIAlertController.Style.alert)
+                
+        refreshAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action: UIAlertAction!) in
+                    print("Handle Cancel Logic here")
+                    refreshAlert .dismiss(animated: true, completion: nil)
+           }))
+        
+        refreshAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
+                    print("Handle Ok logic here")
+            // add this job to management page
+            managementViewController().autohandleAddTab(text: applyText)
+           }))
+
+            self.present(refreshAlert, animated: true, completion: nil)
+    }
+    
     // This is design in job detail page
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -63,7 +101,7 @@ class JobDetailsViewController: UIViewController {
     
     let urlButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("visit the official site", for: .normal)
+        button.setTitle("Visit the official site", for: .normal)
         button.tintColor = .white
         button.backgroundColor = .systemPurple
         button.layer.cornerRadius = 15
@@ -130,15 +168,9 @@ class JobDetailsViewController: UIViewController {
         return textView
     }()
     
-    let applyButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Apply", for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .systemPurple
-        button.layer.cornerRadius = 15
-        button.addTarget(self, action: #selector(handleapplyUrl), for: .touchUpInside)
-        return button
-    }()
+    
+    
+    
     
     // implent zoom in and zoom out
     var pinchGesture = UIPinchGestureRecognizer();
@@ -165,7 +197,6 @@ class JobDetailsViewController: UIViewController {
         view.addSubview(descriptionTextView)
         descriptionTextView.anchor(top: stackView.bottomAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 10, left: 20, bottom: 20, right: 20))
         
-        view.addSubview(applyButton)
-        applyButton.anchor(top: descriptionTextView.bottomAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor, padding: .init(top: 10, left: 70, bottom: 30, right: 70))
+        
     }
 }

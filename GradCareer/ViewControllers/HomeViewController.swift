@@ -36,6 +36,8 @@ class HomeViewController: UICollectionViewController, UISearchBarDelegate {
         
         // create a logout button at top-left
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+
+        setupSearchBar()
         
         // user is not logged in
         if Auth.auth().currentUser?.uid == nil {
@@ -43,9 +45,12 @@ class HomeViewController: UICollectionViewController, UISearchBarDelegate {
         }
         
         title = "Home"
+
+        self.navigationController?.navigationBar.titleTextAttributes =
+        [NSAttributedString.Key.font: UIFont(name: "Chalkduster", size: 27)!,
+         NSAttributedString.Key.foregroundColor: UIColor.black]
         collectionView.backgroundColor = UIColor(named: "backgroundMain")
         collectionView.register(SearchViewCell.self, forCellWithReuseIdentifier: cellId)
-        setupSearchBar()
         
         Service.shared.getResults() {[weak self] result in
             switch result {
@@ -68,7 +73,7 @@ class HomeViewController: UICollectionViewController, UISearchBarDelegate {
     let citySearchBar = UISearchBar()
     
     // begin to create a search bar
-    private func setupSearchBar(){
+    @objc func setupSearchBar(){
         definesPresentationContext = true
         navigationItem.searchController = self.searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -141,7 +146,7 @@ class HomeViewController: UICollectionViewController, UISearchBarDelegate {
     
     // specify the job cell size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width - 20, height: 180)
+        return .init(width: view.frame.width - 20, height: 210)
     }
     
     init(){
