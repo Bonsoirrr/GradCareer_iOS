@@ -9,4 +9,4 @@ GradCareer is an iOS application that designed for college students which are in
 - Run this app and you will see the Login/Register view on your simulator
 - Create a new account and enjoy this app!
 
-![img](/login.png {width=40px height=400px})
+![image](/login.png = 250x)
